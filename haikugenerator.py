@@ -1,4 +1,5 @@
 from string import punctuation
+import random
 
 #functions  
 def get_menu_input(): # optional helper function to ensure user is giving valid menu input
@@ -30,39 +31,55 @@ def create_dictionary(file):
     with open('syllable_data.txt','r') as file:
       
         for lines in file:
-            file.readline()
             values = lines.strip().split(', ')
        
             data_dict.update({values[0]:values[1]})
         print(data_dict)
+    return data_dict
     pass
 
 
-def create_random_line(words, syllables = 5):
-    
+def create_random_line(word_to_syllable, words, syllables=5):
+    line_syllable_count = 0
+    line_words = []
 
+    for _ in range(100):  # Limit to 100 iterations to avoid infinite loop
+        random_word = random.choice(words)
+        word_syllables = int(word_to_syllable.get(random_word, 1))
 
+        # Check if adding the current word exceeds the desired syllable count
+        if line_syllable_count + word_syllables <= syllables:
+            line_words.append(random_word)
+            line_syllable_count += word_syllables
 
+            # Stop if we reach the desired syllable count
+            if line_syllable_count == syllables:
+                break
 
+    if line_syllable_count != syllables:
+        # If unable to create a line with the desired syllables, try again
+        return create_random_line(word_to_syllable, words, syllables)
 
+    print("Selected words:", line_words)
+    return ' '.join(line_words)
 
-    pass
-   
-    
+def create_random_haiku(word_to_syllable):
+    u_file = input("Enter a file name: ")
 
+    with open(u_file, 'r') as file:
+        u_words = [clean_punctuation(word.strip()) for word in file]
 
-def create_random_haiku():
-    '''
-    This is the function that will be called when the user wants to create a 
-    randomized haiku based on their input file.
+    # Ensure each line has the correct syllable count
+    line1 = create_random_line(word_to_syllable, u_words, 5)
+    line2 = create_random_line(word_to_syllable, u_words, 7)
+    line3 = create_random_line(word_to_syllable, u_words, 5)
 
-    YOU CHOOSE THE PARAMETERS AND RETURN VALUE.
-
-    use the create_random_line function.
-    You may create other helper functions too if you need.
-    '''
-    pass
-
+    if line1 and line2 and line3:
+        haiku = f"{line1}\n{line2}\n{line3}"
+        print("\nYour random haiku: ")
+        print(haiku)
+    else:
+        print("Unable to generate a haiku with the given file.")
 
 def check_syllable_count(line, count=5):
     '''
@@ -96,24 +113,24 @@ run = True
 while run:
     print_menu()
     user_choice = input('(1/2/3): ')
-    '''
-    Add some input sanitization and error-catching here!
-    If the user enters something other than 1,2, or 3, let them know
-    that is not valid input!
-    '''
-
-    '''
-    You are free to change the code below!
-    Use your functions wisely.
-    The function calls CAN AND SHOULD BE CHANGED since you will be
-    deciding on the parameters and return values for these functions.
-    '''
+ 
 
     if user_choice == '1':
-        create_random_haiku()
+        
+    
+            
+
+        haiku = create_random_haiku(word_to_syllable)
+        print(haiku)
+
     elif user_choice == '2':
         check_haiku()
+        
     elif user_choice == '3':
+        print('End')
+
+    else:
+        print('Invalid Option, Enter 1 2 or 3')
         '''
         Add code here so the program will stop when the user types 3.
         '''
