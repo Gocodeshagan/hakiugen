@@ -1,0 +1,141 @@
+'''
+Haiku Generator
+
+Author:
+Date:
+
+[describe your project here]
+'''
+'''
+TODO:
+expand data set with other poem types
+add function to add new words
+testing
+comment functions
+update starter code
+
+2 data sets - one that is poem words w syllables
+            - one that is ALL words w syllables
+
+When making random poem, use poem words
+When checking a poem, use ALL words
+'''
+
+# IMPORTS ----------------------------------------------------------------------
+
+# FILE HANDLING ----------------------------------------------------------------
+from random import choice
+word_to_syl = { }
+
+
+def add_dictionary_item(line: str):
+    clean_word = line.split(', ')[0].strip()
+    clean_syl = int(line.split(', ')[1].strip())
+    word_to_syl[clean_word] = clean_syl
+
+
+with open('new_clean_data.txt') as data_file:
+    for line in data_file:
+        add_dictionary_item(line)
+
+# INTERACTIONS -----------------------------------------------------------------
+
+
+def print_menu():
+    print('------------------------------------')
+    print('-       HAIKU MAKING PROGRAM       -')
+    print('- OPTIONS                          -')
+    print('- 1 : Get randomly generated poems -')
+    print('- 2: Have your haiku checked       -')
+    print('- 3: See menu again                -')
+    print('- 4: Quit the program              -')
+    print('------------------------------------')
+
+
+def get_menu_input():
+    choice = input('Enter your selection (1/2/3/4): ')
+    while choice not in '1234':
+        print('--------Invalid input----------')
+        choice = input('Enter your selection (1/2/3/4): ')
+    return int(choice)
+
+
+def get_haiku_input():
+    print('Type out your haiku one line at a time as prompted.')
+    print('Do not use any punctuation.')
+    line1 = input('LINE 1: ')
+    line2 = input('LINE 2: ')
+    line3 = input('LINE 3: ')
+    lines = [line1, line2, line3]
+    return lines
+
+
+# HAIKU FUNCTIONS --------------------------------------------------------------
+
+
+def create_line(total_syl=5):
+    current_syl = 0
+    phrase = ""
+    while current_syl < total_syl:
+        new_word = choice(list(word_to_syl.keys()))
+        # print(new_word)
+        if word_to_syl[new_word] + current_syl <= total_syl:
+            phrase += new_word + ' '
+            current_syl += word_to_syl[new_word]
+    return phrase
+
+
+def create_haiku():
+    poem = ""
+    poem += create_line() + '\n'
+    poem += create_line(7) + '\n'
+    poem += create_line() + '\n'
+    return poem
+
+
+def check_line(line: str, total_syl=5):
+    words = line.split()
+    current_syl = 0
+    for word in words:
+        if word not in word_to_syl:
+            print('Unidentified word: ', word)
+        else:
+            current_syl += word_to_syl[word]
+    return current_syl == total_syl
+
+
+def check_haiku(lines):
+    first_right = check_line(lines[0])
+    if not first_right:
+        print('Your first line does not have exactly 5 syllables.')
+    second_right = check_line(lines[1], 7)
+    if not second_right:
+        print('Your second line does not have exactly 7 syllables.')
+    third_right = check_line(lines[2])
+    if not third_right:
+        print('Your third line does not have exactly 5 syllables.')
+    return first_right and second_right and third_right
+
+# MAIN CODE --------------------------------------------------------------------
+
+
+'''
+Print the menu and have the game loop here
+'''
+run = True
+while run:
+    print_menu()
+    user_choice = get_menu_input()
+    if user_choice == 1:
+        haiku = create_haiku()
+        print(haiku)
+    elif user_choice == 2:
+        lines = get_haiku_input()
+        if check_haiku(lines):
+            print('Great - perfect haiku structure!')
+        else:
+            print('Try again!')
+    elif user_choice == 3:
+        print_menu()
+    elif user_choice == 4:
+        quit()
